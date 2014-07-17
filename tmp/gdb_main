@@ -1,0 +1,34 @@
+break main
+run
+adv SoftDecisionSolver::train
+
+set gd_param->verbosity = 1
+set gd_param->show_obj_each_iter = true
+set gd_param->show_learning_rate_each_iter = true
+set gd_param->num_of_iter = 100
+set gd_param->optimal_error = 0
+set gd_param->init_learning_rate = 0
+set gd_param->init_learning_rate_try_1st = 1
+set gd_param->init_learning_rate_try_factor = 2
+set gd_param->init_learning_rate_try_subsample_rate = 0.5
+set gd_param->init_learning_rate_try_min_sample = 50
+# set gd_param->out_training_proc = 0
+
+set sgd_param->size_of_batch = 51
+
+set sd_param->verbosity = 3
+set sd_param->show_p_each_iter = true
+set sd_param->num_of_trials = 2
+set sd_param->num_of_iter_update_p_per_train = 1
+set sd_param->num_of_iter_update_p_per_epoch = 100
+set sd_param->num_of_iter_update_p_per_batch = 100
+# set sd_param->out_training_proc = 0
+
+set model.param.lambda = 1e-5
+set model.param.b_learning_rate_factor = 0.01
+set model.param.init_var_subsample_rate = 0.5
+set model.param.init_var_subsample_min = 50
+
+# break SoftDecisionModel::loss
+# break SoftDecisionModel::train_batch
+del
