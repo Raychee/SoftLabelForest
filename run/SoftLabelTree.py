@@ -461,6 +461,7 @@ class SoftLabelForest(object):
                               'verbose'      : 0,
                               'warm_start'   : False}
         self.forest = []
+        self.avg_num_of_leaves = 0
 
     def set_up(self, *args, **kwargs):
         self.gd_param,    \
@@ -534,6 +535,7 @@ class SoftLabelForest(object):
                                       self.ovr_param,
                                       self.tree_param),
                         X, Y, self.forest_param.bootstrapping))
+        self.avg_num_of_leaves = self._avg_num_of_leaves()
         return self
 
     def test_proba(self, *args, **kwargs):
@@ -591,7 +593,7 @@ class SoftLabelForest(object):
         if complexity_all_trees is not None:
             complexity = np.vstack(complexity_all_trees).T
         if depths_all_trees is not None:
-            depths = np.vstack(complexity_all_trees).T
+            depths = np.vstack(depths_all_trees).T
         return pack_seq(Y_proba, complexity, depths)
 
     def test(self, *args, **kwargs):
@@ -642,6 +644,7 @@ class SoftLabelForest(object):
                                      self.tree_param,
                                      self.forest_param)
         new_forest.forest = self.forest[index]
+        self.avg_num_of_leaves = self._avg_num_of_leaves()
         return new_forest
 
     def __iter__(self):
@@ -681,11 +684,18 @@ class SoftLabelForest(object):
                'forest_param.num_of_parallel_jobs              = {self.forest_param.num_of_parallel_jobs}\n' \
                'forest_param.bootstrapping                     = {self.forest_param.bootstrapping}\n\n' \
                'ovr_param.update( {self.ovr_param} )\n\n' \
-               'There are {len_self} trees in this forest.' \
+               'Number of trees in the forest:          {len_self}\n' \
+               'Average number of leaves in the forest: {self.avg_num_of_leaves}' \
                .format(self=self,
                        gd_repr=self.gd_param.verbosity.__repr__(),
                        sd_repr=self.sd_param.verbosity.__repr__(),
                        len_self=len(self))
+
+    def _avg_num_of_leaves(self):
+        num_of_leaves = 0.
+        for tree in self:
+            num_of_leaves += tree.num_of_leaves
+        return num_of_leaves / len(self)
 
 
 def _parallel_train(tree, X, Y, bootstrapping):
